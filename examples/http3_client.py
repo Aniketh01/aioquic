@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import aiofiles
 import logging
 import os
 import pickle
@@ -258,16 +259,16 @@ async def perform_http_request(
         output_path = os.path.join(
             output_dir, os.path.basename(urlparse(url).path) or "index.html"
         )
-        with open(output_path, "wb") as output_file:
+        async with aiofiles.open(output_path, "wb") as output_file:
             for http_event in http_events:
                 if isinstance(http_event, HeadersReceived) and include:
                     headers = b""
                     for k, v in http_event.headers:
                         headers += k + b": " + v + b"\r\n"
                     if headers:
-                        output_file.write(headers + b"\r\n")
+                        await output_file.write(headers + b"\r\n")
                 elif isinstance(http_event, DataReceived):
-                    output_file.write(http_event.data)
+                    await output_file.write(http_event.data)
 
 
 def save_session_ticket(ticket: SessionTicket) -> None:
