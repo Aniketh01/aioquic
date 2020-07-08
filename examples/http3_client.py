@@ -466,3 +466,4 @@ if __name__ == "__main__":
             zero_rtt=args.zero_rtt,
         )
     )
+    loop.close()
